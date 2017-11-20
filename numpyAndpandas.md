@@ -1,16 +1,21 @@
-# <b id=bn>[Numpy](#b1)</b> && <b id=bp> [Pandas](#p1)</b>
+# <b id=title_numpy>[Numpy](#numpy)</b> && <b id=title_pandas> [Pandas](#pandas)</b>
 
-### <b id=b1>[Numpy](#bn)</b>
+### <b id=numpy>[Numpy](#title_numpy)</b>
+
+* <big id=list_array>[numpy.array](#array)</big>
+* numpy.arange
+* numpy.linspace
+---
 
 * **安装**
 ```
-$ sudo pip3 install pandas
+$ sudo pip3 install numpy
 ```
 * **引入**
 ```py
 >>> import numpy as np
 ```
-#### numpy.array<small>(object, dtype=None, copy=True, order='K', subok=False, ndmin=0)</small>
+#### <b id=array>[numpy.array](#numpy)</b><small>(object, dtype=None, copy=True, order='K', subok=False, ndmin=0)</small>
 * Create an array.
 ```py
 >>> np.array([1, 2, 3])
@@ -122,7 +127,7 @@ Out[24]: numpy.ndarray
 In [25]: f.dtype
 Out[25]: dtype('float64')
 ```
-### <b id=p1>[Pandas](#bp)</b>
+### <b id=pandas>[Pandas](#title_pandas)</b>
 
 * **安装**
 ```python
