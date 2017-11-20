@@ -26,7 +26,7 @@ $ sudo pip3 install pandas
 ```py
 >>> import numpy as np
 ```
-#### <b id=array>[numpy.array](#numpy)</b><small>(object, dtype=None, copy=True, order='K', subok=False, ndmin=0)</small>
+#### <font id=array size=5>[numpy.array](#numpy)</font><font size=3>(object, dtype=None, copy=True, order='K', subok=False, ndmin=0)</font>
 * Create an array.
 ```py
 >>> np.array([1, 2, 3])
