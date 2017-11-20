@@ -13,12 +13,12 @@ $ sudo pip3 install pandas
 * [linspace](#linspace)
 * [zeros](#zeros)
 * [ones](#ones)
-* <font id=attributes>Array attributes</font>
+* <b id=attributes>Array attributes</b>
     * [ndim](#ndim)
     * [shape](#shape)
     * [size](#size)
     * [dtype](#dtype)
-* <font id=methods>Array methods</font>
+* <b id=methods>Array methods</b>
     * [reshape](#reshape)
 ---
 
