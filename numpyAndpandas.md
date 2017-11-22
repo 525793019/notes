@@ -1,9 +1,17 @@
 # <b id=title_numpy>[Numpy](#numpy)</b> && <b id=title_pandas> [Pandas](#pandas)</b>
 
 ### Install
+
 ```
 $ sudo pip3 install numpy
 $ sudo pip3 install pandas
+```
+
+### Import
+
+```python
+>>> import numpy as np
+>>> import pandas as pd
 ```
 
 ### <b id=numpy>[Numpy](#title_numpy)</b>
@@ -27,6 +35,15 @@ $ sudo pip3 install pandas
 * [nonzero](#nonzero)
 * [clip](#clip)
 * [ravel](#ravel)
+* [stack](#stack)
+* [concatenate](#concatenate)
+* [vstack](#vstack)
+* [hstack](#hstack)
+* [array_split](#array_split)
+* [split](#split)
+* [vsplit](#vsplit)
+* [hsplit](#hsplit)
+* [newaxis](#newaxis)
 * <b id=attributes>Array attributes</b>
     * [ndim](#ndim)
     * [shape](#shape)
@@ -40,15 +57,18 @@ $ sudo pip3 install pandas
     * [transpose](#transpose)
     * [T](#T)
     * [flatten](#flatten)
+    * [copy](#copy)
+* <b id=compare>Compare</b>
+    * [ravel vs flatten](#c1)
+    * [stack vs concatenate](#c2)
+    * [shape vs newaxis](#c3)
+    * [array_split vs split](#c4)
 ---
 
-* **引入**
-```py
->>> import numpy as np
-```
 #### <big id=array>[numpy.array](#numpy)</big><small>(object, dtype=None, copy=True, order='K', subok=False, ndmin=0)</small>
 * Create an array.
-```py
+
+```python
 >>> np.array([1, 2, 3])
 array([1, 2, 3])
 
@@ -82,6 +102,7 @@ array([[1, 2],
 matrix([[1, 2],
         [3, 4]])
 ```
+
 #### <big id=arange>[numpy.arange](#numpy)</big><small>([start, ]stop, [step, ]dtype=None)</small>
 * Return evenly spaced values within a given interval.
 * [start, stop)
@@ -479,6 +500,212 @@ array([ 0,  2,  4,  1,  3,  5,  6,  8, 10,  7,  9, 11])
 >>> a.ravel(order='K')
 array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11])
 ```
+#### <big id=stack>[numpy.stack](#numpy)</big><small>(arrays, axis=0)</small>
+* Join a sequence of arrays along a **new axis**.
+* The axis parameter specifies the index of the new axis in the dimensions of the result. For example, if axis=0 it will be the first dimension and if axis=-1 it will be the last dimension.
+* New in version 1.10.0.
+```py
+>>> arrays = [np.random.randn(3, 4) for _ in range(10)]
+>>> np.stack(arrays, axis=0).shape
+(10, 3, 4)
+>>> np.stack(arrays, axis=1).shape
+(3, 10, 4)
+>>> np.stack(arrays, axis=2).shape
+(3, 4, 10)
+>>> a = np.array([1, 2, 3])
+>>> b = np.array([2, 3, 4])
+>>> np.stack((a, b))
+array([[1, 2, 3],
+       [2, 3, 4]])
+>>> np.stack((a, b), axis=-1)
+array([[1, 2],
+       [2, 3],
+       [3, 4]])
+```
+#### <big id=concatenate>[numpy.concatenate](#numpy)</big><small>(arrays,axis=0)</small>
+* Join a sequence of arrays along an **existing axis**.
+```py
+>>> a = np.array([[1, 2], [3, 4]])
+>>> b = np.array([[5, 6]])
+>>> np.concatenate((a, b), axis=0)
+array([[1, 2],
+       [3, 4],
+       [5, 6]])
+>>> np.concatenate((a, b.T), axis=1)
+array([[1, 2, 5],
+       [3, 4, 6]])
+
+This function will not preserve masking of MaskedArray inputs.
+
+>>> a = np.ma.arange(3)
+>>> a[1] = np.ma.masked
+>>> b = np.arange(2, 5)
+>>> a
+masked_array(data = [0 -- 2],
+             mask = [False  True False],
+       fill_value = 999999)
+>>> b
+array([2, 3, 4])
+>>> np.concatenate([a, b])
+masked_array(data = [0 1 2 2 3 4],
+             mask = False,
+       fill_value = 999999)
+>>> np.ma.concatenate([a, b])
+masked_array(data = [0 -- 2 2 3 4],
+             mask = [False  True False False False False],
+       fill_value = 999999)
+```
+#### <big id=vstack>[numpy.vstack](#numpy)</big><small>(tup)</small>
+* Stack arrays in sequence vertically (row wise).
+* Take a sequence of arrays and stack them vertically to make a single array. Rebuild arrays divided by vsplit.
+* This function continues to be supported for backward compatibility, but you should prefer np.concatenate or np.stack. The np.stack function was added in NumPy 1.10.
+```py
+>>> a = np.array([1, 2, 3])
+>>> b = np.array([2, 3, 4])
+>>> np.vstack((a,b))
+array([[1, 2, 3],
+       [2, 3, 4]])
+
+>>> a = np.array([[1], [2], [3]])
+>>> b = np.array([[2], [3], [4]])
+>>> np.vstack((a,b))
+array([[1],
+       [2],
+       [3],
+       [2],
+       [3],
+       [4]])
+```
+#### <big id=hstack>[numpy.hstack](#numpy)</big><small>(tup)</small>
+* Stack arrays in sequence horizontally (column wise).
+* Take a sequence of arrays and stack them horizontally to make a single array. Rebuild arrays divided by hsplit.
+* This function continues to be supported for backward compatibility, but you should prefer np.concatenate or np.stack. The np.stack function was added in NumPy 1.10.
+```py
+>>> a = np.array((1,2,3))
+>>> b = np.array((2,3,4))
+>>> np.hstack((a,b))
+array([1, 2, 3, 2, 3, 4])
+>>> a = np.array([[1],[2],[3]])
+>>> b = np.array([[2],[3],[4]])
+>>> np.hstack((a,b))
+array([[1, 2],
+       [2, 3],
+       [3, 4]])
+```
+#### <big id=array_split>[numpy.array_split](#numpy)</big><small>(ary, indices_or_sections, axis=0)</small>
+* Split an array into multiple sub-arrays.
+* Please refer to the split documentation. The only difference between these functions is that array_split allows indices_or_sections to be an integer that does not equally divide the axis.
+```py
+>>> x = np.arange(8.0)
+>>> np.array_split(x, 3)
+    [array([ 0.,  1.,  2.]), array([ 3.,  4.,  5.]), array([ 6.,  7.])]
+```
+#### <big id=split>[numpy.split](#numpy)</big><small>(ary, indices_or_sections, axis=0)</small>
+* Split an array into multiple sub-arrays.
+```py
+>>> x = np.arange(9.0)
+>>> np.split(x, 3)
+[array([ 0.,  1.,  2.]), array([ 3.,  4.,  5.]), array([ 6.,  7.,  8.])]
+
+>>> x = np.arange(8.0)
+>>> np.split(x, [3, 5, 6, 10])
+[array([ 0.,  1.,  2.]),
+ array([ 3.,  4.]),
+ array([ 5.]),
+ array([ 6.,  7.]),
+ array([], dtype=float64)]
+```
+#### <big id=vsplit>[numpy.vsplit](#numpy)</big><small>(ary, indices_or_sections)</small>
+* Split an array into multiple sub-arrays vertically (row-wise).
+* Please refer to the split documentation. vsplit is equivalent to split with axis=0 (default), the array is always split along the first axis regardless of the array dimension.
+```py
+>>> x = np.arange(16.0).reshape(4, 4)
+>>> x
+array([[  0.,   1.,   2.,   3.],
+       [  4.,   5.,   6.,   7.],
+       [  8.,   9.,  10.,  11.],
+       [ 12.,  13.,  14.,  15.]])
+>>> np.vsplit(x, 2)
+[array([[ 0.,  1.,  2.,  3.],
+       [ 4.,  5.,  6.,  7.]]),
+ array([[  8.,   9.,  10.,  11.],
+       [ 12.,  13.,  14.,  15.]])]
+>>> np.vsplit(x, np.array([3, 6]))
+[array([[  0.,   1.,   2.,   3.],
+       [  4.,   5.,   6.,   7.],
+       [  8.,   9.,  10.,  11.]]),
+ array([[ 12.,  13.,  14.,  15.]]),
+ array([], dtype=float64)]
+ 
+With a higher dimensional array the split is still along the first axis.
+
+>>> x = np.arange(8.0).reshape(2, 2, 2)
+>>> x
+array([[[ 0.,  1.],
+        [ 2.,  3.]],
+       [[ 4.,  5.],
+        [ 6.,  7.]]])
+>>> np.vsplit(x, 2)
+[array([[[ 0.,  1.],
+        [ 2.,  3.]]]),
+ array([[[ 4.,  5.],
+        [ 6.,  7.]]])]
+```
+#### <big id=hsplit>[numpy.hsplit](#numpy)</big><small>(ary, indices_or_sections)</small>
+* Split an array into multiple sub-arrays horizontally (column-wise).
+* Please refer to the split documentation. hsplit is equivalent to split with axis=1, the array is always split along the second axis regardless of the array dimension.
+```py
+>>> x = np.arange(16.0).reshape(4, 4)
+>>> x
+array([[  0.,   1.,   2.,   3.],
+       [  4.,   5.,   6.,   7.],
+       [  8.,   9.,  10.,  11.],
+       [ 12.,  13.,  14.,  15.]])
+>>> np.hsplit(x, 2)
+[array([[  0.,   1.],
+       [  4.,   5.],
+       [  8.,   9.],
+       [ 12.,  13.]]),
+ array([[  2.,   3.],
+       [  6.,   7.],
+       [ 10.,  11.],
+       [ 14.,  15.]])]
+>>> np.hsplit(x, np.array([3, 6]))
+[array([[  0.,   1.,   2.],
+       [  4.,   5.,   6.],
+       [  8.,   9.,  10.],
+       [ 12.,  13.,  14.]]),
+ array([[  3.],
+       [  7.],
+       [ 11.],
+       [ 15.]]),
+ array([], dtype=float64)]
+
+With a higher dimensional array the split is still along the second axis.
+
+>>> x = np.arange(8.0).reshape(2, 2, 2)
+>>> x
+array([[[ 0.,  1.],
+        [ 2.,  3.]],
+       [[ 4.,  5.],
+        [ 6.,  7.]]])
+>>> np.hsplit(x, 2)
+[array([[[ 0.,  1.]],
+       [[ 4.,  5.]]]),
+ array([[[ 2.,  3.]],
+       [[ 6.,  7.]]])]
+```
+#### <big id=newaxis>[numpy.newaxis](#numpy)</big>
+* The newaxis object can be used in all slicing operations to create an axis of length one. newaxis is an alias for ‘None’, and ‘None’ can be used in place of this with the same result.
+```py
+>>> np.arange(4).shape
+(4,)
+>>> np.arange(4)[np.newaxis,:].shape
+(1, 4)
+>>> np.arange(4)[None,:].shape
+(1, 4)
+```
+#### <big id=hstack>[numpy.hstack](#numpy)</big><small></small>
 #### <big>Array attributes</big>
 #### <b id=ndim>[array.ndim](#attributes)</b>
 * Number of array dimensions.
@@ -656,6 +883,21 @@ array([ 1.,  2.,  3.,  4.])
 array([1, 2, 3, 4])
 >>> a.flatten('F')
 array([1, 3, 2, 4])
+```
+#### <big id=copy>[array.copy](#methods)</big><small>(order='C')</small>
+* Return a copy of the array.
+```py
+>>> x = np.array([[1,2,3],[4,5,6]], order='F')
+>>> y = x.copy()
+>>> x.fill(0)
+>>> x
+array([[0, 0, 0],
+       [0, 0, 0]])
+>>> y
+array([[1, 2, 3],
+       [4, 5, 6]])
+>>> y.flags['C_CONTIGUOUS']
+True
 ```
 ### <b id=pandas>[Pandas](#title_pandas)</b>
 
